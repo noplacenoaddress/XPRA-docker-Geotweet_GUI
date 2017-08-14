@@ -8,14 +8,21 @@ ENV DISPLAY=:100
 # Expose the SSH port
 EXPOSE 22
 
-RUN apt-get update && apt-get install -y curl \
+RUN apt-get update && apt-get -y install apt-utils
+
+RUN apt-get -y upgrade
+
+RUN apt-get install -y curl \
     && curl https://winswitch.org/gpg.asc | apt-key add - \
     && echo "deb http://winswitch.org/ xenial main" > /etc/apt/sources.list.d/winswitch.list 
 
-RUN apt-get -y upgrade && apt-get -y install openssh-server \
+RUN apt-get update
+
+RUN apt-get -y install openssh-server \
     x11-apps xterm language-pack-en-base \
-    xserver-xephyr i3 xpra git sudo nano apt-utils \
+    git sudo nano xpra \
     build-essential
+
 
 # Create OpenSSH privilege separation directory
 RUN mkdir /var/run/sshd 
@@ -40,5 +47,9 @@ VOLUME /home/docker
 ADD xpra-display /tmp/xpra-display
 RUN echo "$(cat /tmp/xpra-display)\n$(cat /etc/bash.bashrc)" > /etc/bash.bashrc 
 
+ADD geotweet /tmp/geotweet
+RUN mv /tmp/geotweet /usr/bin
+RUN chmod +x /usr/bin/geotweet
+
 # Start SSH anx Xpra
-CMD chown -R docker:docker /home/docker && /usr/sbin/sshd && rm -f /tmp/.X100-lock && su docker -c "xpra start $DISPLAY --mdns=no --notifications=no && sleep 1 && cp ~/.xpra/run-xpra /tmp/run-xpra && cat /tmp/run-xpra | grep -v affinity > ~/.xpra/run-xpra && sleep infinity"
+CMD chown -R docker:docker /home/docker && /usr/sbin/sshd && rm -f /tmp/.X100-lock && su docker -c "xpra start $DISPLAY --mdns=no --webcam=no --notifications=no && sleep 1 && cp ~/.xpra/run-xpra /tmp/run-xpra && cat /tmp/run-xpra | grep -v affinity > ~/.xpra/run-xpra && sleep infinity"
