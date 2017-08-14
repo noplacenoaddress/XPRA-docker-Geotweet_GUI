@@ -1,7 +1,7 @@
-pacman -S xpra
-pacman -S virtualgl
-pacman -S opencv
-pacaur -S libhdf5
+pacaur -S aur/xpra-winswitch
+sudo pacman -S virtualgl
+sudo pacman -S opencv
+sudo pacaur -S libhdf5
 
 docker system prune
 docker container kill x11-xpra
