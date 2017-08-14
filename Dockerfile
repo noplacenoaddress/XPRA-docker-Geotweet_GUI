@@ -7,6 +7,7 @@ ENV DISPLAY=:100
 
 # Expose the SSH port
 EXPOSE 22
+EXPOSE 2022
 
 RUN apt-get update && apt-get -y install apt-utils
 
